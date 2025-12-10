@@ -1,3 +1,5 @@
+import { Container } from "../core-components/Container";
+import { Text as Typography } from "@/core-components/Text";
 import { PlayerCard } from "./PlayerCard";
 import type { Player } from "../models/Player";
 
@@ -66,14 +68,14 @@ const mockPlayers: Player[] = [
 
 export const Leaderboard = () => {
     return (
-        <section className="max-w-7xl mx-auto px-4 py-12">
+        <Container className="py-12">
             <div className="mb-8">
-                <h2 className="text-4xl md:text-5xl font-display text-center mb-2 glow-text-cyan">
+                <Typography as="h2" variant="h2" glow="cyan" className="mb-2 text-center">
                     THE LEADERBOARD
-                </h2>
-                <p className="text-center text-muted-foreground">
+                </Typography>
+                <Typography as="p" color="muted" className="text-center">
                     Current standings of the Puzzle crew
-                </p>
+                </Typography>
             </div>
 
             <div className="space-y-3">
@@ -81,6 +83,6 @@ export const Leaderboard = () => {
                     <PlayerCard key={player.rank} {...player} />
                 ))}
             </div>
-        </section>
+        </Container>
     );
 };
