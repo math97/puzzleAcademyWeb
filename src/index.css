@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 270 60% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 270 50% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 270 55% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 180 100% 50%;
+    --primary-foreground: 270 60% 8%;
+
+    --secondary: 230 50% 20%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 270 40% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 40 100% 50%;
+    --accent-foreground: 270 60% 8%;
+
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 95%;
+
+    --success: 180 100% 50%;
+    --success-foreground: 270 60% 8%;
+
+    --border: 270 40% 20%;
+    --input: 270 40% 18%;
+    --ring: 180 100% 50%;
+
+    --radius: 0.75rem;
+
+    --glow-cyan: 180 100% 50%;
+    --glow-amber: 40 100% 50%;
+    --void-purple: 270 60% 15%;
+    --midnight-blue: 230 50% 20%;
+
+    --sidebar-background: 270 60% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 180 100% 50%;
+    --sidebar-primary-foreground: 270 60% 8%;
+    --sidebar-accent: 270 50% 12%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 270 40% 20%;
+    --sidebar-ring: 180 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/40 backdrop-blur-xl border border-border/50 rounded-lg;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    @apply border-primary/50;
+    box-shadow: 0 0 20px hsl(var(--glow-cyan) / 0.2);
+  }
+
+  .glow-text-cyan {
+    text-shadow: 0 0 20px hsl(var(--glow-cyan) / 0.5);
+  }
+
+  .glow-text-amber {
+    text-shadow: 0 0 20px hsl(var(--glow-amber) / 0.5);
+  }
+
+  .stat-positive {
+    @apply text-success glow-text-cyan;
+  }
+
+  .stat-negative {
+    @apply text-destructive;
+  }
+
+  .rank-gold {
+    @apply bg-gradient-to-r from-accent/20 to-accent/5 border-accent/50;
+    box-shadow: 0 0 30px hsl(var(--glow-amber) / 0.3);
+  }
+}
