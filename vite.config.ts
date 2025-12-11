@@ -10,4 +10,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://puzzleacademyapi.m2adev.cloud',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

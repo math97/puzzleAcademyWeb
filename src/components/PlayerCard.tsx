@@ -9,22 +9,22 @@ import { StatItem } from "@/components/StatItem";
 interface PlayerCardProps extends Player { }
 
 export const PlayerCard = ({
-    rank,
+    rankPosition,
     name,
     tagline,
     tier,
     role,
     winrate,
-    lpChange,
+    pdlChange,
     mainChampions = ["Ahri", "Zed", "Yasuo"]
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    const isPositive = lpChange > 0;
+    const isPositive = pdlChange > 0;
     const isWinning = winrate >= 50;
 
     return (
         <GlassCard
-            className={`p-4 ${rank === 1 ? 'rank-gold' : ''}`}
+            className={`p-4 ${rankPosition === 1 ? 'rank-gold' : ''}`}
             hoverEffect
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -32,7 +32,7 @@ export const PlayerCard = ({
             <div className="flex items-center gap-4">
                 {/* Rank */}
                 <div className="flex-shrink-0">
-                    <RankBadge rank={rank} />
+                    <RankBadge rank={rankPosition} />
                 </div>
 
                 {/* Player Info */}
@@ -55,8 +55,8 @@ export const PlayerCard = ({
                         isPositive={isWinning}
                     />
                     <StatItem
-                        label="LP Change"
-                        value={`${isPositive ? '+' : ''}${lpChange}`}
+                        label="PDL Change"
+                        value={`${isPositive ? '+' : ''}${pdlChange}`}
                         trend={isPositive ? "up" : "down"}
                         isPositive={isPositive}
                     />
