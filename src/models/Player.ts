@@ -63,4 +63,5 @@ export interface Player {
     pdlChange: number; // pointsLostOrWon (from stats)
     mainChampions: string[]; // Placeholder
     totalPoints: number; // For sorting
+    summonerLevel?: number;
 }

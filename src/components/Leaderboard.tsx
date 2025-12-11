@@ -6,6 +6,8 @@ import type { Player, PlayerResponseItem } from "../models/Player";
 import { fetchPlayers } from "@/services/api";
 
 type QueueType = 'SOLO' | 'FLEX';
+type SortType = 'RANK' | 'LEVEL';
+type SortDirection = 'ASC' | 'DESC';
 
 export const Leaderboard = () => {
     const [rawPlayers, setRawPlayers] = useState<PlayerResponseItem[]>([]);
@@ -13,6 +15,8 @@ export const Leaderboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [queueType, setQueueType] = useState<QueueType>('SOLO');
+    const [sortBy, setSortBy] = useState<SortType>('RANK');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
 
     useEffect(() => {
         const loadData = async () => {
@@ -46,7 +50,6 @@ export const Leaderboard = () => {
                 : null;
 
             // If no snapshot for this queue, fallback to player base data (though base data might be stale/solo-only)
-            // Ideally if no snapshot for FLEX, they are unranked in FLEX.
             const tier = latestSnapshot?.tier || (queueType === 'SOLO' ? player.tier : "UNRANKED");
             const rankLabel = latestSnapshot?.rank || (queueType === 'SOLO' ? player.rank : "");
             const leaguePoints = latestSnapshot?.leaguePoints ?? 0;
@@ -65,6 +68,7 @@ export const Leaderboard = () => {
                 rankPosition: 0,
                 name: player.gameName,
                 tagline: player.tagLine,
+                summonerLevel: player.summonerLevel,
                 tier: tier ?? "UNRANKED",
                 rankLabel: rankLabel ?? "",
                 role: "Fill",
@@ -76,10 +80,18 @@ export const Leaderboard = () => {
             };
         });
 
-        // Sort by totalPoints descending
-        mappedPlayers.sort((a, b) => b.totalPoints - a.totalPoints);
+        // Sort players
+        mappedPlayers.sort((a, b) => {
+            let comparison = 0;
+            if (sortBy === 'RANK') {
+                comparison = (b.totalPoints || 0) - (a.totalPoints || 0);
+            } else {
+                comparison = (b.summonerLevel || 0) - (a.summonerLevel || 0);
+            }
+            return sortDirection === 'DESC' ? comparison : -comparison;
+        });
 
-        // Assign rank position
+        // Assign rank position (always based on index after sort)
         const rankedPlayers = mappedPlayers.map((p, index) => ({
             ...p,
             rankPosition: index + 1
@@ -87,7 +99,7 @@ export const Leaderboard = () => {
 
         setDisplayedPlayers(rankedPlayers);
 
-    }, [rawPlayers, queueType]);
+    }, [rawPlayers, queueType, sortBy, sortDirection]);
 
     if (loading) {
         return (
@@ -115,26 +127,71 @@ export const Leaderboard = () => {
                     Current standings of the Puzzle crew
                 </Typography>
 
-                {/* Queue Toggle */}
-                <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm">
-                    <button
-                        onClick={() => setQueueType('SOLO')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2">
+                    {/* Queue Toggle (Left) */}
+                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-2 sm:order-1">
+                        <button
+                            onClick={() => setQueueType('SOLO')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
                                 ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
                                 : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Solo/Duo
-                    </button>
-                    <button
-                        onClick={() => setQueueType('FLEX')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
+                                }`}
+                        >
+                            Solo/Duo
+                        </button>
+                        <button
+                            onClick={() => setQueueType('FLEX')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
                                 ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
                                 : 'text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Flex
-                    </button>
+                                }`}
+                        >
+                            Flex
+                        </button>
+                    </div>
+
+                    {/* Sort Controls (Right) */}
+                    <div className="flex items-center gap-2 bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-1 sm:order-2">
+                        <button
+                            onClick={() => {
+                                if (sortBy === 'RANK') {
+                                    setSortDirection(prev => prev === 'DESC' ? 'ASC' : 'DESC');
+                                } else {
+                                    setSortBy('RANK');
+                                    setSortDirection('DESC');
+                                }
+                            }}
+                            className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === 'RANK'
+                                ? 'text-primary'
+                                : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            Rank
+                            {sortBy === 'RANK' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+                        <div className="w-px h-4 bg-white/10" />
+                        <button
+                            onClick={() => {
+                                if (sortBy === 'LEVEL') {
+                                    setSortDirection(prev => prev === 'DESC' ? 'ASC' : 'DESC');
+                                } else {
+                                    setSortBy('LEVEL');
+                                    setSortDirection('DESC');
+                                }
+                            }}
+                            className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === 'LEVEL'
+                                ? 'text-primary'
+                                : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            Level
+                            {sortBy === 'LEVEL' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
 

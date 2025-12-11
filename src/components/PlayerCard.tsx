@@ -16,6 +16,7 @@ export const PlayerCard = ({
     role,
     winrate,
     pdlChange,
+    summonerLevel,
     mainChampions = ["Ahri", "Zed", "Yasuo"]
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -40,6 +41,11 @@ export const PlayerCard = ({
                     <div className="flex items-center gap-2 mb-1">
                         <Text variant="h3">{name}</Text>
                         <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
+                        {summonerLevel && (
+                            <Badge variant="default" className="text-xs py-0 h-5">
+                                Lvl {summonerLevel}
+                            </Badge>
+                        )}
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                         <Badge variant="primary">{tier}</Badge>
