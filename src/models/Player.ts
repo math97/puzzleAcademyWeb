@@ -27,13 +27,17 @@ export interface Snapshot {
 
 export interface PlayerStats {
     pointsLostOrWon: number;
-    pointsLostOrWonLifetime: number;
+}
+
+export interface QueueStats {
+    snapshots: Snapshot[];
+    stats: PlayerStats;
 }
 
 export interface PlayerResponseItem {
     player: PlayerData;
-    snapshots: Snapshot[];
-    stats: PlayerStats;
+    solo: QueueStats;
+    flex: QueueStats;
 }
 
 export interface PlayersApiResponse {
