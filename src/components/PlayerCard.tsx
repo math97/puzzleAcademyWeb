@@ -13,6 +13,7 @@ export const PlayerCard = ({
     name,
     tagline,
     tier,
+    rankLabel,
     role,
     winrate,
     pdlChange,
@@ -48,7 +49,7 @@ export const PlayerCard = ({
                         )}
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                        <Badge variant="primary">{tier}</Badge>
+                        <Badge variant="primary">{tier} {rankLabel}</Badge>
                         <Text color="muted">{role}</Text>
                     </div>
                 </div>
