@@ -51,17 +51,17 @@ export interface PlayersApiResponse {
 
 // UI Model (Flattened for easier usage in components)
 export interface Player {
-    id: string; // From PlayerData.id
-    rankPosition: number; // Calculated index + 1
-    name: string; // gameName
-    tagline: string; // tagLine
-    tier: string; // From latest snapshot or player data
-    rankLabel: string; // From latest snapshot (e.g. "IV")
-    role: string; // Placeholder
-    winrate: number; // Calculated from snapshot wins/losses
-    pdl: number; // leaguePoints
-    pdlChange: number; // pointsLostOrWon (from stats)
-    mainChampions: string[]; // Placeholder
-    totalPoints: number; // For sorting
+    id: string;
+    rankPosition: number;
+    name: string;
+    tagline: string;
+    tier: string;
+    rankLabel: string;
+    role: string;
+    winrate: number;
+    pdl: number;
+    pdlChange: number;
+    mainChampions: string[];
+    totalPoints: number;
     summonerLevel?: number;
 }
