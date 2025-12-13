@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ChampionService } from "../services/champion.service";
 import { Container } from "../core-components/Container";
 import { Text as Typography } from "@/core-components/Text";
 import { PlayerCard } from "./PlayerCard";
@@ -63,19 +64,30 @@ export const Leaderboard = () => {
                 }
             }
 
+            const masteries = player.championMasteries?.map(m => {
+                const champ = ChampionService.getChampionById(m.championId);
+                return {
+                    championId: m.championId,
+                    championLevel: m.championLevel,
+                    championName: champ?.name,
+                    championImage: champ ? ChampionService.getChampionImageUrl(champ.id) : undefined
+                };
+            }) || [];
+
             return {
                 id: player.id,
-                rankPosition: 0,
+                rankPosition: 0, // This will be updated after sorting
                 name: player.gameName,
                 tagline: player.tagLine,
                 summonerLevel: player.summonerLevel,
                 tier: tier ?? "UNRANKED",
                 rankLabel: rankLabel ?? "",
-                role: "Fill",
+                role: "Fill", // Placeholder as not in API yet
                 winrate: winrate,
                 pdl: leaguePoints,
                 pdlChange: stats.pointsLostOrWon,
-                mainChampions: ["Ahri", "Zed", "Yasuo"],
+                mainChampions: [], // Deprecated in favor of championMasteries
+                championMasteries: masteries,
                 totalPoints: totalPoints
             };
         });

@@ -18,6 +18,7 @@ export const PlayerCard = ({
     winrate,
     pdlChange,
     summonerLevel,
+    championMasteries,
     mainChampions = ["Ahri", "Zed", "Yasuo"]
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -75,11 +76,37 @@ export const PlayerCard = ({
                 <div className="mt-4 pt-4 border-t border-border/50 animate-in fade-in duration-200">
                     <Text variant="label" color="muted" className="mb-2">Main Champions</Text>
                     <div className="flex gap-2">
-                        {mainChampions.map((champ) => (
-                            <Badge key={champ} variant="default">
-                                {champ}
-                            </Badge>
-                        ))}
+                        {championMasteries && championMasteries.length > 0 ? (
+                            championMasteries.map((mastery) => (
+                                <div key={mastery.championId} className="flex flex-col items-center gap-1 group/champ relative">
+                                    {mastery.championImage ? (
+                                        <div className="relative">
+                                            <img
+                                                src={mastery.championImage}
+                                                alt={mastery.championName || 'Champion'}
+                                                className="w-8 h-8 rounded-full border border-white/10 group-hover/champ:border-primary/50 transition-colors"
+                                            />
+                                            <div className="absolute -bottom-1 -right-1 bg-black/80 text-[10px] px-1 rounded-full border border-white/10 text-white font-medium">
+                                                {mastery.championLevel}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Badge variant="default" className="w-8 h-8 flex items-center justify-center p-0">
+                                            {mastery.championLevel}
+                                        </Badge>
+                                    )}
+                                    <span className="text-[10px] text-muted-foreground opacity-0 group-hover/champ:opacity-100 transition-opacity absolute -bottom-4 whitespace-nowrap">
+                                        {mastery.championName}
+                                    </span>
+                                </div>
+                            ))
+                        ) : (
+                            mainChampions.map((champ) => (
+                                <Badge key={champ} variant="default">
+                                    {champ}
+                                </Badge>
+                            ))
+                        )}
                     </div>
                 </div>
             )}

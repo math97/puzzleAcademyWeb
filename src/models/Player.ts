@@ -9,8 +9,34 @@ export interface PlayerData {
     leaguePoints: number | null;
     profileIconId: number;
     summonerLevel: number;
+    championMasteries: {
+        championId: number;
+        championLevel: number;
+    }[];
 }
 
+// UI Model (Flattened for easier usage in components)
+export interface Player {
+    id: string;
+    rankPosition: number;
+    name: string;
+    tagline: string;
+    tier: string;
+    rankLabel: string;
+    role: string;
+    winrate: number;
+    pdl: number;
+    pdlChange: number;
+    championMasteries?: {
+        championId: number;
+        championLevel: number;
+        championName?: string;
+        championImage?: string;
+    }[];
+    mainChampions: string[]; // Keep for backward compatibility or existing usage if needed, or deprecate
+    totalPoints: number;
+    summonerLevel?: number;
+}
 export interface Snapshot {
     id: string;
     playerId: string;
@@ -47,21 +73,4 @@ export interface PlayersApiResponse {
         page: number;
         lastPage: number;
     };
-}
-
-// UI Model (Flattened for easier usage in components)
-export interface Player {
-    id: string;
-    rankPosition: number;
-    name: string;
-    tagline: string;
-    tier: string;
-    rankLabel: string;
-    role: string;
-    winrate: number;
-    pdl: number;
-    pdlChange: number;
-    mainChampions: string[];
-    totalPoints: number;
-    summonerLevel?: number;
 }
