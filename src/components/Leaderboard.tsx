@@ -7,7 +7,7 @@ import type { Player, PlayerResponseItem } from "../models/Player";
 import { fetchPlayers } from "@/services/api";
 
 type QueueType = 'SOLO' | 'FLEX';
-type SortType = 'RANK' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'BEST_KDA';
+type SortType = 'RANK' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
 type SortDirection = 'ASC' | 'DESC';
 
 export const Leaderboard = () => {
@@ -108,6 +108,8 @@ export const Leaderboard = () => {
             let comparison = 0;
             if (sortBy === 'RANK') {
                 comparison = (b.totalPoints || 0) - (a.totalPoints || 0);
+            } else if (sortBy === 'WINRATE') {
+                comparison = (b.winrate || 0) - (a.winrate || 0);
             } else if (sortBy === 'LEVEL') {
                 comparison = (b.summonerLevel || 0) - (a.summonerLevel || 0);
             } else if (sortBy === 'SEASON_KILLS') {
@@ -116,6 +118,8 @@ export const Leaderboard = () => {
                 comparison = (b.stats?.totalDeaths || 0) - (a.stats?.totalDeaths || 0);
             } else if (sortBy === 'SEASON_ASSISTS') {
                 comparison = (b.stats?.totalAssists || 0) - (a.stats?.totalAssists || 0);
+            } else if (sortBy === 'SEASON_KDA') {
+                comparison = (b.seasonKda || 0) - (a.seasonKda || 0);
             } else if (sortBy === 'BEST_KDA') {
                 comparison = (b.bestMatchKda || 0) - (a.bestMatchKda || 0);
             }
@@ -142,7 +146,7 @@ export const Leaderboard = () => {
     };
 
     const getSortButtonClass = (type: SortType) => {
-        return `px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === type
+        return `px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${sortBy === type
             ? 'text-primary'
             : 'text-muted-foreground hover:text-foreground'
             }`;
@@ -198,28 +202,27 @@ export const Leaderboard = () => {
                     </div>
 
                     {/* Sort Controls (Right) */}
-                    <div className="flex flex-wrap items-center justify-center gap-2 bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-1 xl:order-2 overflow-x-auto max-w-full">
+                    <div className="flex items-center gap-1 order-1 xl:order-2 overflow-x-auto max-w-full no-scrollbar">
                         {/* Rank */}
                         <button
                             onClick={() => handleSort('RANK')}
                             className={getSortButtonClass('RANK')}
                         >
-                            LP
+                            PDL
                             {sortBy === 'RANK' && (
                                 <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
                             )}
                         </button>
 
-                        <div className="w-px h-4 bg-white/10" />
-
                         <button
-                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
-                            disabled
+                            onClick={() => handleSort('WINRATE')}
+                            className={getSortButtonClass('WINRATE')}
                         >
                             Winrate
+                            {sortBy === 'WINRATE' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
                         </button>
-
-                        <div className="w-px h-4 bg-white/10" />
 
                         <button
                             onClick={() => handleSort('LEVEL')}
@@ -231,7 +234,7 @@ export const Leaderboard = () => {
                             )}
                         </button>
 
-                        <div className="w-px h-4 bg-white/10" />
+                        <div className="w-px h-4 bg-white/10 mx-2" />
 
                         <button
                             onClick={() => handleSort('SEASON_KILLS')}
@@ -263,36 +266,17 @@ export const Leaderboard = () => {
                             )}
                         </button>
 
-                        <div className="w-px h-4 bg-white/10" />
-
                         <button
-                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
-                            disabled
+                            onClick={() => handleSort('SEASON_KDA')}
+                            className={getSortButtonClass('SEASON_KDA')}
                         >
                             Season KDA
+                            {sortBy === 'SEASON_KDA' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
                         </button>
 
-
-                        <div className="w-px h-4 bg-white/10" />
-
-                        <button
-                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
-                            disabled
-                        >
-                            Best Match Kills
-                        </button>
-                        <button
-                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
-                            disabled
-                        >
-                            Most Match Deaths
-                        </button>
-                        <button
-                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
-                            disabled
-                        >
-                            Best Match Assists
-                        </button>
+                        <div className="w-px h-4 bg-white/10 mx-2" />
 
                         <button
                             onClick={() => handleSort('BEST_KDA')}

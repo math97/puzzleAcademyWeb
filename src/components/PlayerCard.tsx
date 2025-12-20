@@ -7,7 +7,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { StatItem } from "@/components/StatItem";
 
 interface PlayerCardProps extends Player {
-    sortBy?: 'RANK' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'BEST_KDA';
+    sortBy?: 'RANK' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
 }
 
 export const PlayerCard = ({
@@ -16,6 +16,7 @@ export const PlayerCard = ({
     tagline,
     tier,
     rankLabel,
+    pdl,
     role,
     winrate,
     summonerLevel,
@@ -67,7 +68,7 @@ export const PlayerCard = ({
                         <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                        <Badge variant="primary">{tier} {rankLabel}</Badge>
+                        <Badge variant="primary">{tier} {rankLabel} • {pdl} PDL</Badge>
                         <Text color="muted">{role}</Text>
                     </div>
                 </div>
