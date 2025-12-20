@@ -17,6 +17,7 @@ export const PlayerCard = ({
     tier,
     rankLabel,
     pdl,
+    pdlChange,
     role,
     winrate,
     summonerLevel,
@@ -29,6 +30,17 @@ export const PlayerCard = ({
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const isWinning = winrate >= 50;
+
+    // Determine PDL change color and formatted text
+    const pdlChangeColor = pdlChange > 0
+        ? "text-emerald-400"
+        : pdlChange < 0
+            ? "text-rose-400"
+            : "text-muted-foreground";
+
+    const pdlChangeText = pdlChange > 0
+        ? `+${pdlChange}`
+        : pdlChange.toString();
 
     let dynamicStatLabel = "LVL";
     let dynamicStatValue = summonerLevel?.toString() || "0";
@@ -68,7 +80,12 @@ export const PlayerCard = ({
                         <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                        <Badge variant="primary">{tier} {rankLabel} • {pdl} PDL</Badge>
+                        <Badge variant="primary">
+                            {tier} {rankLabel} • {pdl} PDL
+                            <span className={`ml-1 ${pdlChangeColor}`}>
+                                ({pdlChangeText})
+                            </span>
+                        </Badge>
                         <Text color="muted">{role}</Text>
                     </div>
                 </div>
