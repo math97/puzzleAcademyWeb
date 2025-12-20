@@ -6,7 +6,9 @@ import { Badge } from "@/core-components/Badge";
 import { RankBadge } from "@/components/RankBadge";
 import { StatItem } from "@/components/StatItem";
 
-interface PlayerCardProps extends Player { }
+interface PlayerCardProps extends Player {
+    sortBy?: 'RANK' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'BEST_KDA';
+}
 
 export const PlayerCard = ({
     rankPosition,
@@ -16,14 +18,34 @@ export const PlayerCard = ({
     rankLabel,
     role,
     winrate,
-    pdlChange,
     summonerLevel,
     championMasteries,
-    mainChampions = ["Ahri", "Zed", "Yasuo"]
+    mainChampions = ["Ahri", "Zed", "Yasuo"],
+    stats,
+    seasonKda = 0,
+    bestMatchKda = 0,
+    sortBy = 'RANK'
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    const isPositive = pdlChange > 0;
     const isWinning = winrate >= 50;
+
+    let dynamicStatLabel = "LVL";
+    let dynamicStatValue = summonerLevel?.toString() || "0";
+    let dynamicStatColor = "text-cyan-400";
+
+    if (sortBy === 'SEASON_KILLS') {
+        dynamicStatLabel = "KILLS";
+        dynamicStatValue = stats?.totalKills.toString() || "0";
+        dynamicStatColor = "text-green-400";
+    } else if (sortBy === 'SEASON_DEATHS') {
+        dynamicStatLabel = "DEATHS";
+        dynamicStatValue = stats?.totalDeaths.toString() || "0";
+        dynamicStatColor = "text-red-400";
+    } else if (sortBy === 'SEASON_ASSISTS') {
+        dynamicStatLabel = "ASSISTS";
+        dynamicStatValue = stats?.totalAssists.toString() || "0";
+        dynamicStatColor = "text-yellow-400";
+    }
 
     return (
         <GlassCard
@@ -43,11 +65,6 @@ export const PlayerCard = ({
                     <div className="flex items-center gap-2 mb-1">
                         <Text variant="h3">{name}</Text>
                         <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
-                        {summonerLevel && (
-                            <Badge variant="default" className="text-xs py-0 h-5">
-                                Lvl {summonerLevel}
-                            </Badge>
-                        )}
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                         <Badge variant="primary">{tier} {rankLabel}</Badge>
@@ -56,18 +73,31 @@ export const PlayerCard = ({
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center gap-6 text-right">
+                <div className="flex items-center gap-8 text-right">
                     <StatItem
-                        label="Winrate"
+                        label="WINRATE"
                         value={`${winrate}%`}
                         isPositive={isWinning}
+                        className={isWinning ? "text-green-400" : "text-red-400"}
                     />
                     <StatItem
-                        label="PDL Change"
-                        value={`${isPositive ? '+' : ''}${pdlChange}`}
-                        trend={isPositive ? "up" : "down"}
-                        isPositive={isPositive}
+                        label="SEASON KDA"
+                        value={seasonKda.toFixed(2)}
+                        className="text-blue-300"
                     />
+                    <StatItem
+                        label="BEST KDA"
+                        value={bestMatchKda.toFixed(1)} // Screenshot shows 1 decimal? or 2. using 1 for now like 3.2, 8.5
+                        className="text-white"
+                    />
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium opacity-70">
+                            {dynamicStatLabel}
+                        </span>
+                        <span className={`text-xl font-bold tracking-tight ${dynamicStatColor}`}>
+                            {dynamicStatValue}
+                        </span>
+                    </div>
                 </div>
             </div>
 

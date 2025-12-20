@@ -7,7 +7,7 @@ import type { Player, PlayerResponseItem } from "../models/Player";
 import { fetchPlayers } from "@/services/api";
 
 type QueueType = 'SOLO' | 'FLEX';
-type SortType = 'RANK' | 'LEVEL';
+type SortType = 'RANK' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'BEST_KDA';
 type SortDirection = 'ASC' | 'DESC';
 
 export const Leaderboard = () => {
@@ -74,6 +74,14 @@ export const Leaderboard = () => {
                 };
             }) || [];
 
+            // Calculate Season KDA
+            let seasonKda = 0;
+            if (player.stats && player.stats.totalDeaths > 0) {
+                seasonKda = Number(((player.stats.totalKills + player.stats.totalAssists) / player.stats.totalDeaths).toFixed(2));
+            } else if (player.stats && (player.stats.totalKills > 0 || player.stats.totalAssists > 0)) {
+                seasonKda = player.stats.totalKills + player.stats.totalAssists; // Perfect KDA logic
+            }
+
             return {
                 id: player.id,
                 rankPosition: 0, // This will be updated after sorting
@@ -88,7 +96,10 @@ export const Leaderboard = () => {
                 pdlChange: stats.pointsLostOrWon,
                 mainChampions: [], // Deprecated in favor of championMasteries
                 championMasteries: masteries,
-                totalPoints: totalPoints
+                totalPoints: totalPoints,
+                stats: player.stats,
+                seasonKda: seasonKda,
+                bestMatchKda: player.stats?.bestMatchKda || 0
             };
         });
 
@@ -97,8 +108,16 @@ export const Leaderboard = () => {
             let comparison = 0;
             if (sortBy === 'RANK') {
                 comparison = (b.totalPoints || 0) - (a.totalPoints || 0);
-            } else {
+            } else if (sortBy === 'LEVEL') {
                 comparison = (b.summonerLevel || 0) - (a.summonerLevel || 0);
+            } else if (sortBy === 'SEASON_KILLS') {
+                comparison = (b.stats?.totalKills || 0) - (a.stats?.totalKills || 0);
+            } else if (sortBy === 'SEASON_DEATHS') {
+                comparison = (b.stats?.totalDeaths || 0) - (a.stats?.totalDeaths || 0);
+            } else if (sortBy === 'SEASON_ASSISTS') {
+                comparison = (b.stats?.totalAssists || 0) - (a.stats?.totalAssists || 0);
+            } else if (sortBy === 'BEST_KDA') {
+                comparison = (b.bestMatchKda || 0) - (a.bestMatchKda || 0);
             }
             return sortDirection === 'DESC' ? comparison : -comparison;
         });
@@ -112,6 +131,22 @@ export const Leaderboard = () => {
         setDisplayedPlayers(rankedPlayers);
 
     }, [rawPlayers, queueType, sortBy, sortDirection]);
+
+    const handleSort = (type: SortType) => {
+        if (sortBy === type) {
+            setSortDirection(prev => prev === 'DESC' ? 'ASC' : 'DESC');
+        } else {
+            setSortBy(type);
+            setSortDirection('DESC');
+        }
+    };
+
+    const getSortButtonClass = (type: SortType) => {
+        return `px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === type
+            ? 'text-primary'
+            : 'text-muted-foreground hover:text-foreground'
+            }`;
+    };
 
     if (loading) {
         return (
@@ -139,9 +174,9 @@ export const Leaderboard = () => {
                     Current standings of the Puzzle crew
                 </Typography>
 
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2">
+                <div className="flex flex-col xl:flex-row justify-between items-center gap-4 px-2">
                     {/* Queue Toggle (Left) */}
-                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-2 sm:order-1">
+                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-2 xl:order-1">
                         <button
                             onClick={() => setQueueType('SOLO')}
                             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
@@ -163,43 +198,108 @@ export const Leaderboard = () => {
                     </div>
 
                     {/* Sort Controls (Right) */}
-                    <div className="flex items-center gap-2 bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-1 sm:order-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2 bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-1 xl:order-2 overflow-x-auto max-w-full">
+                        {/* Rank */}
                         <button
-                            onClick={() => {
-                                if (sortBy === 'RANK') {
-                                    setSortDirection(prev => prev === 'DESC' ? 'ASC' : 'DESC');
-                                } else {
-                                    setSortBy('RANK');
-                                    setSortDirection('DESC');
-                                }
-                            }}
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === 'RANK'
-                                ? 'text-primary'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                            onClick={() => handleSort('RANK')}
+                            className={getSortButtonClass('RANK')}
                         >
-                            Rank
+                            LP
                             {sortBy === 'RANK' && (
                                 <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
                             )}
                         </button>
+
                         <div className="w-px h-4 bg-white/10" />
+
                         <button
-                            onClick={() => {
-                                if (sortBy === 'LEVEL') {
-                                    setSortDirection(prev => prev === 'DESC' ? 'ASC' : 'DESC');
-                                } else {
-                                    setSortBy('LEVEL');
-                                    setSortDirection('DESC');
-                                }
-                            }}
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${sortBy === 'LEVEL'
-                                ? 'text-primary'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
+                            disabled
+                        >
+                            Winrate
+                        </button>
+
+                        <div className="w-px h-4 bg-white/10" />
+
+                        <button
+                            onClick={() => handleSort('LEVEL')}
+                            className={getSortButtonClass('LEVEL')}
                         >
                             Level
                             {sortBy === 'LEVEL' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+
+                        <div className="w-px h-4 bg-white/10" />
+
+                        <button
+                            onClick={() => handleSort('SEASON_KILLS')}
+                            className={getSortButtonClass('SEASON_KILLS')}
+                        >
+                            Season Kills
+                            {sortBy === 'SEASON_KILLS' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+
+                        <button
+                            onClick={() => handleSort('SEASON_DEATHS')}
+                            className={getSortButtonClass('SEASON_DEATHS')}
+                        >
+                            Season Deaths
+                            {sortBy === 'SEASON_DEATHS' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+
+                        <button
+                            onClick={() => handleSort('SEASON_ASSISTS')}
+                            className={getSortButtonClass('SEASON_ASSISTS')}
+                        >
+                            Season Assists
+                            {sortBy === 'SEASON_ASSISTS' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+
+                        <div className="w-px h-4 bg-white/10" />
+
+                        <button
+                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
+                            disabled
+                        >
+                            Season KDA
+                        </button>
+
+
+                        <div className="w-px h-4 bg-white/10" />
+
+                        <button
+                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
+                            disabled
+                        >
+                            Best Match Kills
+                        </button>
+                        <button
+                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
+                            disabled
+                        >
+                            Most Match Deaths
+                        </button>
+                        <button
+                            className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground cursor-default opacity-50"
+                            disabled
+                        >
+                            Best Match Assists
+                        </button>
+
+                        <button
+                            onClick={() => handleSort('BEST_KDA')}
+                            className={getSortButtonClass('BEST_KDA')}
+                        >
+                            Best Match KDA
+                            {sortBy === 'BEST_KDA' && (
                                 <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
                             )}
                         </button>
@@ -209,7 +309,11 @@ export const Leaderboard = () => {
 
             <div className="space-y-3">
                 {displayedPlayers.map((player) => (
-                    <PlayerCard key={player.id} {...player} />
+                    <PlayerCard
+                        key={player.id}
+                        {...player}
+                        sortBy={sortBy}
+                    />
                 ))}
             </div>
         </Container>

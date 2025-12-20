@@ -13,6 +13,12 @@ export interface PlayerData {
         championId: number;
         championLevel: number;
     }[];
+    stats?: {
+        totalKills: number;
+        totalDeaths: number;
+        totalAssists: number;
+        bestMatchKda: number;
+    };
 }
 
 // UI Model (Flattened for easier usage in components)
@@ -36,6 +42,14 @@ export interface Player {
     mainChampions: string[]; // Keep for backward compatibility or existing usage if needed, or deprecate
     totalPoints: number;
     summonerLevel?: number;
+    stats?: {
+        totalKills: number;
+        totalDeaths: number;
+        totalAssists: number;
+        bestMatchKda: number;
+    };
+    seasonKda?: number;
+    bestMatchKda?: number;
 }
 export interface Snapshot {
     id: string;
