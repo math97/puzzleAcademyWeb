@@ -46,8 +46,9 @@ export const Leaderboard = () => {
             const { snapshots, stats } = queueData;
 
             // Get latest snapshot if available
-            const latestSnapshot = snapshots.length > 0
-                ? [...snapshots].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+            const rawSnapshotList = [...snapshots];
+            const latestSnapshot = rawSnapshotList.length > 0
+                ? [...rawSnapshotList].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
                 : null;
 
             // If no snapshot for this queue, fallback to player base data (though base data might be stale/solo-only)
@@ -82,6 +83,16 @@ export const Leaderboard = () => {
                 seasonKda = player.stats.totalKills + player.stats.totalAssists; // Perfect KDA logic
             }
 
+            // Calculate PDL Change (Latest - Earliest)
+            let pdlChangeValue = stats.pointsLostOrWon; // Default to backend value
+            if (rawSnapshotList.length > 1) {
+                // Ensure sorted by date ascending for this calc
+                const sortedSnapshots = [...rawSnapshotList].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+                const earliest = sortedSnapshots[0];
+                const latest = sortedSnapshots[sortedSnapshots.length - 1];
+                pdlChangeValue = latest.totalPoints - earliest.totalPoints;
+            }
+
             return {
                 id: player.id,
                 rankPosition: 0, // This will be updated after sorting
@@ -93,7 +104,7 @@ export const Leaderboard = () => {
                 role: "Fill", // Placeholder as not in API yet
                 winrate: winrate,
                 pdl: leaguePoints,
-                pdlChange: stats.pointsLostOrWon,
+                pdlChange: pdlChangeValue,
                 mainChampions: [], // Deprecated in favor of championMasteries
                 championMasteries: masteries,
                 totalPoints: totalPoints,
