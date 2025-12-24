@@ -7,7 +7,7 @@ import { RankBadge } from "@/components/RankBadge";
 import { StatItem } from "@/components/StatItem";
 
 interface PlayerCardProps extends Player {
-    sortBy?: 'RANK' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
+    sortBy?: 'RANK' | 'PDL_CHANGE' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
 }
 
 export const PlayerCard = ({

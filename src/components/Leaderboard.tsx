@@ -7,7 +7,7 @@ import type { Player, PlayerResponseItem } from "../models/Player";
 import { fetchPlayers } from "@/services/api";
 
 type QueueType = 'SOLO' | 'FLEX';
-type SortType = 'RANK' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
+type SortType = 'RANK' | 'PDL_CHANGE' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
 type SortDirection = 'ASC' | 'DESC';
 
 export const Leaderboard = () => {
@@ -119,6 +119,8 @@ export const Leaderboard = () => {
             let comparison = 0;
             if (sortBy === 'RANK') {
                 comparison = (b.totalPoints || 0) - (a.totalPoints || 0);
+            } else if (sortBy === 'PDL_CHANGE') {
+                comparison = (b.pdlChange || 0) - (a.pdlChange || 0);
             } else if (sortBy === 'WINRATE') {
                 comparison = (b.winrate || 0) - (a.winrate || 0);
             } else if (sortBy === 'LEVEL') {
@@ -219,8 +221,18 @@ export const Leaderboard = () => {
                             onClick={() => handleSort('RANK')}
                             className={getSortButtonClass('RANK')}
                         >
-                            PDL
+                            Rank
                             {sortBy === 'RANK' && (
+                                <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
+                            )}
+                        </button>
+
+                        <button
+                            onClick={() => handleSort('PDL_CHANGE')}
+                            className={getSortButtonClass('PDL_CHANGE')}
+                        >
+                            PDL
+                            {sortBy === 'PDL_CHANGE' && (
                                 <span className="text-xs">{sortDirection === 'DESC' ? '▼' : '▲'}</span>
                             )}
                         </button>
