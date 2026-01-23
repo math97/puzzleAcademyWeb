@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ChampionService } from "../services/champion.service";
 import { Container } from "../core-components/Container";
 import { Text as Typography } from "@/core-components/Text";
@@ -9,6 +9,53 @@ import { fetchPlayers } from "@/services/api";
 type QueueType = 'SOLO' | 'FLEX';
 type SortType = 'RANK' | 'PDL_CHANGE' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
 type SortDirection = 'ASC' | 'DESC';
+type TimePeriod = 'LAST_7_DAYS' | 'LAST_14_DAYS' | 'LAST_30_DAYS' | 'THIS_WEEK' | 'THIS_MONTH' | 'SEASON';
+
+const TIME_PERIOD_LABELS: Record<TimePeriod, string> = {
+    LAST_7_DAYS: 'Last 7 days',
+    LAST_14_DAYS: 'Last 14 days',
+    LAST_30_DAYS: 'Last 30 days',
+    THIS_WEEK: 'This week',
+    THIS_MONTH: 'This month',
+    SEASON: 'Season',
+};
+
+function getDateRangeFromPeriod(period: TimePeriod): { from: Date | undefined; to: Date | undefined } {
+    const now = new Date();
+
+    switch (period) {
+        case 'LAST_7_DAYS': {
+            const from = new Date(now);
+            from.setDate(from.getDate() - 7);
+            return { from, to: now };
+        }
+        case 'LAST_14_DAYS': {
+            const from = new Date(now);
+            from.setDate(from.getDate() - 14);
+            return { from, to: now };
+        }
+        case 'LAST_30_DAYS': {
+            const from = new Date(now);
+            from.setDate(from.getDate() - 30);
+            return { from, to: now };
+        }
+        case 'THIS_WEEK': {
+            const from = new Date(now);
+            const dayOfWeek = from.getDay();
+            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+            from.setDate(from.getDate() - daysToMonday);
+            from.setHours(0, 0, 0, 0);
+            return { from, to: now };
+        }
+        case 'THIS_MONTH': {
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            return { from, to: now };
+        }
+        case 'SEASON':
+        default:
+            return { from: undefined, to: undefined };
+    }
+}
 
 export const Leaderboard = () => {
     const [rawPlayers, setRawPlayers] = useState<PlayerResponseItem[]>([]);
@@ -18,11 +65,15 @@ export const Leaderboard = () => {
     const [queueType, setQueueType] = useState<QueueType>('SOLO');
     const [sortBy, setSortBy] = useState<SortType>('RANK');
     const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
+    const [timePeriod, setTimePeriod] = useState<TimePeriod>('SEASON');
+
+    const dateRange = useMemo(() => getDateRangeFromPeriod(timePeriod), [timePeriod]);
 
     useEffect(() => {
         const loadData = async () => {
+            setLoading(true);
             try {
-                const response = await fetchPlayers();
+                const response = await fetchPlayers(dateRange);
                 setRawPlayers(response.data);
             } catch (err) {
                 console.error(err);
@@ -33,7 +84,7 @@ export const Leaderboard = () => {
         };
 
         loadData();
-    }, []);
+    }, [dateRange]);
 
     useEffect(() => {
         if (rawPlayers.length === 0) return;
@@ -57,12 +108,14 @@ export const Leaderboard = () => {
             const leaguePoints = latestSnapshot?.leaguePoints ?? 0;
             const totalPoints = latestSnapshot?.totalPoints ?? 0;
 
+            // Use delta values from backend for period-based stats
+            const winsChange = stats.winsChange ?? 0;
+            const lossesChange = stats.lossesChange ?? 0;
+            const totalGamesInPeriod = winsChange + lossesChange;
+
             let winrate = 0;
-            if (latestSnapshot) {
-                const totalGames = latestSnapshot.wins + latestSnapshot.losses;
-                if (totalGames > 0) {
-                    winrate = Math.round((latestSnapshot.wins / totalGames) * 100);
-                }
+            if (totalGamesInPeriod > 0) {
+                winrate = Math.round((winsChange / totalGamesInPeriod) * 100);
             }
 
             const masteries = player.championMasteries?.map(m => {
@@ -192,26 +245,41 @@ export const Leaderboard = () => {
                 </Typography>
 
                 <div className="flex flex-col xl:flex-row justify-between items-center gap-4 px-2">
-                    {/* Queue Toggle (Left) */}
-                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-2 xl:order-1">
-                        <button
-                            onClick={() => setQueueType('SOLO')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
-                                ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
+                    {/* Queue Toggle & Time Period (Left) */}
+                    <div className="flex flex-col sm:flex-row gap-2 order-2 xl:order-1">
+                        <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm">
+                            <button
+                                onClick={() => setQueueType('SOLO')}
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
+                                    ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                    }`}
+                            >
+                                Solo/Duo
+                            </button>
+                            <button
+                                onClick={() => setQueueType('FLEX')}
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
+                                    ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                    }`}
+                            >
+                                Flex
+                            </button>
+                        </div>
+
+                        {/* Time Period Selector */}
+                        <select
+                            value={timePeriod}
+                            onChange={(e) => setTimePeriod(e.target.value as TimePeriod)}
+                            className="bg-background/50 border border-white/10 px-4 py-2 rounded-lg backdrop-blur-sm text-sm font-medium text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
                         >
-                            Solo/Duo
-                        </button>
-                        <button
-                            onClick={() => setQueueType('FLEX')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
-                                ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
-                                : 'text-muted-foreground hover:text-foreground'
-                                }`}
-                        >
-                            Flex
-                        </button>
+                            {(Object.keys(TIME_PERIOD_LABELS) as TimePeriod[]).map((period) => (
+                                <option key={period} value={period}>
+                                    {TIME_PERIOD_LABELS[period]}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Sort Controls (Right) */}

@@ -67,6 +67,8 @@ export interface Snapshot {
 
 export interface PlayerStats {
     pointsLostOrWon: number;
+    winsChange: number;
+    lossesChange: number;
 }
 
 export interface QueueStats {
