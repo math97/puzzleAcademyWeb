@@ -12,7 +12,7 @@ export const RankBadge = ({ rank, className }: RankBadgeProps) => {
     return (
         <div
             className={cn(
-                "w-12 h-12 rounded-lg flex items-center justify-center font-display text-2xl transition-colors",
+                "w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-display transition-colors",
                 isFirst ? "bg-accent/20 text-accent" : "bg-muted text-foreground",
                 className
             )}
@@ -20,7 +20,7 @@ export const RankBadge = ({ rank, className }: RankBadgeProps) => {
             <Text
                 variant="stat"
                 glow={isFirst ? "amber" : "none"}
-                className={cn(isFirst ? "text-accent" : "text-foreground")}
+                className={cn("text-xl sm:text-2xl", isFirst ? "text-accent" : "text-foreground")}
             >
                 {rank}
             </Text>

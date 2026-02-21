@@ -19,8 +19,8 @@ const buttonVariants = cva(
                     "border border-border text-foreground hover:border-primary/50 hover:text-primary bg-transparent",
             },
             size: {
-                sm: "px-3 py-1.5 text-xs rounded-md",
-                md: "px-4 py-2 text-sm rounded-lg",
+                sm: "px-3 py-2.5 sm:py-1.5 text-xs rounded-md",
+                md: "px-4 py-3 sm:py-2 text-xs sm:text-sm rounded-lg",
                 lg: "px-6 py-3 text-base rounded-lg",
             },
         },

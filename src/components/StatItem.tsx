@@ -17,12 +17,12 @@ export const StatItem = ({ label, value, trend, isPositive, className }: StatIte
             </Text>
             <div className="flex items-center gap-1 justify-end">
                 {trend && (
-                    trend === "up" ? <TrendingUp className="w-4 h-4 text-success" /> :
-                        trend === "down" ? <TrendingDown className="w-4 h-4 text-destructive" /> : null
+                    trend === "up" ? <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-success" /> :
+                        trend === "down" ? <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-destructive" /> : null
                 )}
                 <Text
                     variant="stat"
-                    className={`text-xl font-bold tracking-tight ${isPositive === true ? "text-success glow-text-cyan" :
+                    className={`text-base sm:text-xl font-bold tracking-tight ${isPositive === true ? "text-success glow-text-cyan" :
                             isPositive === false ? "text-destructive" : ""
                         } ${className || ""}`.trim()}
                 >
