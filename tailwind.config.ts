@@ -61,6 +61,18 @@ export default {
                     border: "hsl(var(--sidebar-border))",
                     ring: "hsl(var(--sidebar-ring))",
                 },
+                tier: {
+                    iron: "hsl(var(--tier-iron))",
+                    bronze: "hsl(var(--tier-bronze))",
+                    silver: "hsl(var(--tier-silver))",
+                    gold: "hsl(var(--tier-gold))",
+                    platinum: "hsl(var(--tier-platinum))",
+                    emerald: "hsl(var(--tier-emerald))",
+                    diamond: "hsl(var(--tier-diamond))",
+                    master: "hsl(var(--tier-master))",
+                    grandmaster: "hsl(var(--tier-grandmaster))",
+                    challenger: "hsl(var(--tier-challenger))",
+                },
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
