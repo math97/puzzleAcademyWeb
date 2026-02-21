@@ -5,6 +5,8 @@ import { Text } from "@/core-components/Text";
 import { Badge } from "@/core-components/Badge";
 import { RankBadge } from "@/components/RankBadge";
 import { StatItem } from "@/components/StatItem";
+import { cn } from "@/lib/utils";
+import { getTierClasses } from "@/lib/tier";
 
 interface PlayerCardProps extends Player {
     sortBy?: 'RANK' | 'PDL_CHANGE' | 'WINRATE' | 'LEVEL' | 'SEASON_KILLS' | 'SEASON_DEATHS' | 'SEASON_ASSISTS' | 'SEASON_KDA' | 'BEST_KDA';
@@ -30,6 +32,7 @@ export const PlayerCard = ({
 }: PlayerCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
     const isWinning = winrate >= 50;
+    const tierClasses = getTierClasses(tier);
 
     // Determine PDL change color and formatted text
     const pdlChangeText = pdlChange > 0
@@ -38,20 +41,20 @@ export const PlayerCard = ({
 
     let dynamicStatLabel = "LVL";
     let dynamicStatValue = summonerLevel?.toString() || "0";
-    let dynamicStatColor = "text-cyan-400";
+    let dynamicStatColor = "text-primary";
 
     if (sortBy === 'SEASON_KILLS') {
         dynamicStatLabel = "KILLS";
         dynamicStatValue = stats?.totalKills.toString() || "0";
-        dynamicStatColor = "text-green-400";
+        dynamicStatColor = "text-success";
     } else if (sortBy === 'SEASON_DEATHS') {
         dynamicStatLabel = "DEATHS";
         dynamicStatValue = stats?.totalDeaths.toString() || "0";
-        dynamicStatColor = "text-red-400";
+        dynamicStatColor = "text-destructive";
     } else if (sortBy === 'SEASON_ASSISTS') {
         dynamicStatLabel = "ASSISTS";
         dynamicStatValue = stats?.totalAssists.toString() || "0";
-        dynamicStatColor = "text-yellow-400";
+        dynamicStatColor = "text-accent";
     }
 
     return (
@@ -74,7 +77,12 @@ export const PlayerCard = ({
                         <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                        <Badge variant="primary">{tier} {rankLabel} • {pdl} PDL</Badge>
+                        <Badge
+                            variant="outline"
+                            className={cn("uppercase", tierClasses.text, tierClasses.border)}
+                        >
+                            {tier} {rankLabel} • {pdl} PDL
+                        </Badge>
                         <Text color="muted">{role}</Text>
                     </div>
                 </div>
@@ -85,23 +93,23 @@ export const PlayerCard = ({
                         label="WINRATE"
                         value={`${winrate}%`}
                         isPositive={isWinning}
-                        className={isWinning ? "text-green-400" : "text-red-400"}
+                        className={isWinning ? "text-success" : "text-destructive"}
                     />
                     <StatItem
                         label="PDL CHANGE"
                         value={pdlChangeText}
                         isPositive={pdlChange > 0}
-                        className={pdlChange > 0 ? "text-emerald-400" : (pdlChange < 0 ? "text-rose-400" : "text-muted-foreground")}
+                        className={pdlChange > 0 ? "text-success" : pdlChange < 0 ? "text-destructive" : "text-muted-foreground"}
                     />
                     <StatItem
                         label="SEASON KDA"
                         value={seasonKda.toFixed(2)}
-                        className="text-blue-300"
+                        className="text-primary"
                     />
                     <StatItem
                         label="BEST KDA"
-                        value={bestMatchKda.toFixed(1)} // Screenshot shows 1 decimal? or 2. using 1 for now like 3.2, 8.5
-                        className="text-white"
+                        value={bestMatchKda.toFixed(1)}
+                        className="text-foreground"
                     />
                     <div className="flex flex-col items-end">
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium opacity-70">

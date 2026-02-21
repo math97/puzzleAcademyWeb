@@ -54,6 +54,18 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 270 40% 20%;
     --sidebar-ring: 180 100% 50%;
+
+    /* Rank tier colors */
+    --tier-iron: 250 5% 47%;
+    --tier-bronze: 18 50% 36%;
+    --tier-silver: 210 30% 60%;
+    --tier-gold: 38 70% 52%;
+    --tier-platinum: 175 50% 42%;
+    --tier-emerald: 140 48% 40%;
+    --tier-diamond: 225 55% 60%;
+    --tier-master: 285 48% 55%;
+    --tier-grandmaster: 0 62% 54%;
+    --tier-challenger: 42 90% 62%;
   }
 }
 
