@@ -30,7 +30,7 @@ export const Countdown = () => {
     }, []);
 
     return (
-        <GlassCard className="inline-block px-8 py-4">
+        <GlassCard className="inline-block px-4 py-3 sm:px-8 sm:py-4">
             <Text variant="label" color="muted" className="mb-2">
                 Next Snapshot In
             </Text>

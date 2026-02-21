@@ -159,7 +159,7 @@ export const Leaderboard = () => {
     };
 
     const getSortButtonClass = (type: SortType) => {
-        return `px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${sortBy === type
+        return `px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${sortBy === type
             ? 'text-primary'
             : 'text-muted-foreground hover:text-foreground'
             }`;
@@ -182,7 +182,7 @@ export const Leaderboard = () => {
     }
 
     return (
-        <Container className="py-12">
+        <Container className="py-8 sm:py-12">
             <div className="mb-8 text-center">
                 <Typography as="h2" variant="h2" glow="cyan" className="mb-2">
                     THE LEADERBOARD
@@ -191,12 +191,12 @@ export const Leaderboard = () => {
                     Current standings of the Puzzle crew
                 </Typography>
 
-                <div className="flex flex-col xl:flex-row justify-between items-center gap-4 px-2">
-                    {/* Queue Toggle (Left) */}
-                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm order-2 xl:order-1">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                    {/* Queue Toggle */}
+                    <div className="inline-flex bg-background/50 border border-white/10 p-1 rounded-lg backdrop-blur-sm self-center">
                         <button
                             onClick={() => setQueueType('SOLO')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
+                            className={`px-4 py-3 sm:py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'SOLO'
                                 ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
                                 : 'text-muted-foreground hover:text-foreground'
                                 }`}
@@ -205,7 +205,7 @@ export const Leaderboard = () => {
                         </button>
                         <button
                             onClick={() => setQueueType('FLEX')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
+                            className={`px-4 py-3 sm:py-2 rounded-md text-sm font-medium transition-all duration-200 ${queueType === 'FLEX'
                                 ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(34,211,238,0.2)]'
                                 : 'text-muted-foreground hover:text-foreground'
                                 }`}
@@ -214,8 +214,8 @@ export const Leaderboard = () => {
                         </button>
                     </div>
 
-                    {/* Sort Controls (Right) */}
-                    <div className="flex items-center gap-1 order-1 xl:order-2 overflow-x-auto max-w-full no-scrollbar">
+                    {/* Sort Controls */}
+                    <div className="flex flex-wrap items-center gap-y-1 justify-center">
                         {/* Rank */}
                         <button
                             onClick={() => handleSort('RANK')}

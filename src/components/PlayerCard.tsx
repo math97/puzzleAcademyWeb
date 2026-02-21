@@ -64,31 +64,34 @@ export const PlayerCard = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="flex items-center gap-4">
-                {/* Rank */}
-                <div className="flex-shrink-0">
-                    <RankBadge rank={rankPosition} />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                {/* Row 1 (mobile): Rank badge + player info */}
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    {/* Rank */}
+                    <div className="flex-shrink-0">
+                        <RankBadge rank={rankPosition} />
+                    </div>
+
+                    {/* Player Info */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Text variant="h3">{name}</Text>
+                            <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                            <Badge
+                                variant="outline"
+                                className={cn("uppercase text-[10px] sm:text-xs", tierClasses.text, tierClasses.border)}
+                            >
+                                {tier} {rankLabel} • {pdl} PDL
+                            </Badge>
+                            <Text color="muted">{role}</Text>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Player Info */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Text variant="h3">{name}</Text>
-                        <Text variant="body" color="muted" className="text-sm">#{tagline}</Text>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                        <Badge
-                            variant="outline"
-                            className={cn("uppercase", tierClasses.text, tierClasses.border)}
-                        >
-                            {tier} {rankLabel} • {pdl} PDL
-                        </Badge>
-                        <Text color="muted">{role}</Text>
-                    </div>
-                </div>
-
-                {/* Stats */}
-                <div className="flex items-center gap-8 text-right">
+                {/* Stats — 3-col grid on mobile, flex row on sm+ */}
+                <div className="grid grid-cols-3 sm:flex sm:items-center gap-x-3 gap-y-1 sm:gap-6 sm:text-right text-left pl-[3.25rem] sm:pl-0">
                     <StatItem
                         label="WINRATE"
                         value={`${winrate}%`}
@@ -101,23 +104,27 @@ export const PlayerCard = ({
                         isPositive={pdlChange > 0}
                         className={pdlChange > 0 ? "text-success" : pdlChange < 0 ? "text-destructive" : "text-muted-foreground"}
                     />
-                    <StatItem
-                        label="SEASON KDA"
-                        value={seasonKda.toFixed(2)}
-                        className="text-primary"
-                    />
-                    <StatItem
-                        label="BEST KDA"
-                        value={bestMatchKda.toFixed(1)}
-                        className="text-foreground"
-                    />
-                    <div className="flex flex-col items-end">
+                    <div className="flex flex-col items-start sm:items-end">
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium opacity-70">
                             {dynamicStatLabel}
                         </span>
-                        <span className={`text-xl font-bold tracking-tight ${dynamicStatColor}`}>
+                        <span className={`text-base sm:text-xl font-bold tracking-tight ${dynamicStatColor}`}>
                             {dynamicStatValue}
                         </span>
+                    </div>
+                    <div className="hidden sm:flex sm:flex-col sm:items-end">
+                        <StatItem
+                            label="SEASON KDA"
+                            value={seasonKda.toFixed(2)}
+                            className="text-primary"
+                        />
+                    </div>
+                    <div className="hidden sm:flex sm:flex-col sm:items-end">
+                        <StatItem
+                            label="BEST KDA"
+                            value={bestMatchKda.toFixed(1)}
+                            className="text-foreground"
+                        />
                     </div>
                 </div>
             </div>

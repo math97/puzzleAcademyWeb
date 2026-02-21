@@ -5,14 +5,14 @@ import React from "react";
 const textVariants = cva("font-sans", {
     variants: {
         variant: {
-            h1: "font-display font-bold uppercase tracking-wider text-6xl md:text-8xl",
-            h2: "font-display font-bold uppercase tracking-wider text-4xl md:text-5xl",
-            h3: "font-display font-bold text-xl truncate",
+            h1: "font-display font-bold uppercase tracking-wider text-4xl sm:text-5xl md:text-7xl lg:text-8xl",
+            h2: "font-display font-bold uppercase tracking-wider text-2xl sm:text-3xl md:text-4xl lg:text-5xl",
+            h3: "font-display font-bold text-lg sm:text-xl",
             h4: "font-display font-bold text-lg",
             body: "text-base",
             label: "text-xs uppercase tracking-wider font-medium",
-            stat: "font-display text-xl",
-            statValue: "font-display text-3xl",
+            stat: "font-display text-lg sm:text-xl",
+            statValue: "font-display text-2xl sm:text-3xl",
         },
         color: {
             default: "text-foreground",
